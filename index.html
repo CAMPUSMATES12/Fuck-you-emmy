@@ -183,29 +183,83 @@ html, body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* BOTTOM NAV */
+/* BOTTOM NAV (FIXED + SAFE) */
 .bottom-nav {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  height: 72px;
-  background: white;
-  border-top: 1px solid rgba(232,96,122,0.1);
-  display: flex; align-items: center; justify-content: space-around;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
-  flex-shrink: 0;
-}
-.nav-btn {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  cursor: pointer; padding: 8px 14px; border-radius: 14px;
-  transition: background 0.2s; -webkit-tap-highlight-color: transparent;
-  user-select: none;
-}
-.nav-btn.active { background: #fff0f3; }
-.nav-btn .icon { font-size: 1.4rem; opacity: 0.4; transition: opacity 0.2s, transform 0.2s; }
-.nav-btn.active .icon { opacity: 1; transform: scale(1.15); }
-.nav-btn .label { font-size: 0.62rem; color: var(--muted); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
-.nav-btn.active .label { color: var(--rose); }
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
 
+  height: 72px;
+  background: #ffffff;
+
+  border-top: 1px solid rgba(232, 96, 122, 0.12);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  z-index: 99999;
+
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.08);
+
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* NAV BUTTON */
+.nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 14px;
+
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+/* ACTIVE STATE */
+.nav-btn.active {
+  background: #fff0f3;
+  transform: translateY(-2px);
+}
+
+/* ICON */
+.nav-btn .icon {
+  font-size: 1.4rem;
+  opacity: 0.5;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.nav-btn.active .icon {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* LABEL */
+.nav-btn .label {
+  font-size: 0.62rem;
+  color: var(--muted);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.nav-btn.active .label {
+  color: var(--rose);
+}
+
+/* SAFETY: prevent content hiding behind nav */
+.scroll-area {
+  padding-bottom: 110px;
+}
 /* ─── LETTER TAB ─── */
 .letter-envelope {
   background: white;
@@ -445,7 +499,7 @@ html, body {
     <div class="app-header-sub">Your Special Day · 21 · 07 · 2008</div>
   </div>
 
-  <div class="scroll-area" id="scroll-area">
+  <div class="scroll-area">
 
     <!-- LETTER TAB -->
     <div class="tab-pane active" id="tab-letter">
@@ -454,7 +508,7 @@ html, body {
         <div class="letter-greeting">My Dearest SP 🌹❤️</div>
         <div class="letter-body">
           <p>Happy Birthday, love. 🎂</p>
-          <p>Today the world got a little brighter — because it's the day <span class="highlight">you</span> arrived in it. You are absolutely beautiful, inside and out, and I love you more than words could ever carry.</p>
+                 <p>Today the world got a little brighter — because it's the day <span class="highlight">you</span> arrived in it. You are absolutely beautiful, inside and out, and I love you more than words could ever carry.</p>
           <p>Looking back at everything we've shared, every laugh, every moment, every small thing that makes us <em>us</em> — I'm so grateful. May your 18th year be your most beautiful yet, filled with joy, favour, and every blessing you deserve.</p>
           <p><span class="highlight">Long life. Prosperity. Love without limit.</span></p>
           <p>This is your very first digital birthday gift card — and it was made entirely with you in mind. I hope it made you smile. 🥂</p>
@@ -464,106 +518,253 @@ html, body {
     </div>
 
     <!-- MUSIC TAB -->
-    <div class="tab-pane" id="tab-music">
-      <div class="player-card">
-        <div class="album-art" id="album-art">
-          <!--
-            ════════════════════════════════════════════
-            HOW TO ADD YOUR ALBUM ART IMAGE:
-            1. Go to https://base64.guru/converter/encode/image
-            2. Upload IMG_1793.jpeg
-            3. Copy the Base64 string
-            4. Replace the src below:
-               <img src="data:image/jpeg;base64,PASTE_HERE" alt="Album Art">
-            5. Delete the .fallback div below it
-            ════════════════════════════════════════════
-          -->
-          <div class="fallback">🎵</div>
-        </div>
-        <div class="song-title">Need Me</div>
-        <div class="song-artist">Fireboy DML</div>
-        <div class="song-tag">💕 Our Love Song</div>
+<div class="tab-pane" id="tab-music">
 
-        <div class="progress-wrap">
-          <input type="range" class="progress-bar" id="progress" value="0" min="0" max="100" step="0.1">
-          <div class="time-row">
-            <span id="cur-time">0:00</span>
-            <span id="dur-time">0:00</span>
-          </div>
-        </div>
+  <div class="player-card">
 
-        <div class="controls">
-          <button class="ctrl-btn" onclick="seekBack()">⏪</button>
-          <button class="ctrl-play" id="play-btn" onclick="togglePlay()">▶️</button>
-          <button class="ctrl-btn" onclick="seekFwd()">⏩</button>
-        </div>
+    <!-- Album Art -->
+    <div class="album-art" id="album-art">
+      <div class="fallback">🎵</div>
+    </div>
 
-        <!--
-          ════════════════════════════════════════════
-          HOW TO ADD YOUR AUDIO FILE:
-          1. Go to https://base64.guru/converter/encode/audio
-          2. Upload your mp3 file
-          3. Copy the Base64 string
-          4. Replace the src below with:
-             data:audio/mp3;base64,PASTE_YOUR_STRING_HERE
-          ════════════════════════════════════════════
-        -->
-        <audio id="audio" src="song.mp3"></audio>
+    <!-- Song Info -->
+    <div class="song-title">Need Me</div>
+    <div class="song-artist">Fireboy DML</div>
+
+    <!-- Audio -->
+    <audio id="audio"
+      src="https://mp3tourl.com/audio/1776421912073-f0986b65-7497-4472-bc37-fdf7cbc0dc33.mp3">
+    </audio>
+
+    <!-- Progress Bar -->
+    <div class="progress-wrap">
+      <input type="range" class="progress-bar" id="progress"
+        value="0" min="0" max="100" step="0.1">
+
+      <div class="time-row">
+        <span id="cur-time">0:00</span>
+        <span id="dur-time">0:00</span>
       </div>
     </div>
 
+    <!-- Controls -->
+    <div class="controls">
+
+      <button class="ctrl-btn" onclick="seekBack()">⏪</button>
+
+      <button class="ctrl-play" id="play-btn" onclick="togglePlay()">
+        ▶️
+      </button>
+
+      <button class="ctrl-btn" onclick="seekFwd()">⏩</button>
+
+    </div>
+
+  </div>
+</div>
+
     <!-- GALLERY TAB -->
     <div class="tab-pane" id="tab-gallery">
-      <div class="gallery-grid" id="gallery-grid">
-        <!--
-          ════════════════════════════════════════════
-          HOW TO ADD YOUR PHOTOS:
-          For each photo:
-          1. Go to https://base64.guru/converter/encode/image
-          2. Upload your photo
-          3. Copy the Base64 string
-          4. In each .gallery-item below, replace the placeholder div with:
-             <img src="data:image/jpeg;base64,PASTE_HERE" alt="Memory">
-          ════════════════════════════════════════════
-        -->
-        <div class="gallery-item" onclick="openLightbox(this)">
-          <img src="20251018_120302.jpg" alt="Memory 1">
-          <div class="gallery-caption">Memory 1</div>
+      <div class="gallery-grid">
+
+        <div class="gallery-item">
+          <img src="https://i.postimg.cc/QCDCXWfy/IMG-5186.jpg" alt="Memory 1">
         </div>
-        <div class="gallery-item" onclick="openLightbox(this)">
-          <img src="IMG_1793.jpeg" alt="Memory 2">
-          <div class="gallery-caption">Memory 2</div>
+
+        <div class="gallery-item">
+          <img src="https://i.postimg.cc/fLmknvf5/IMG-5187.jpg"alt="Memory 2">
         </div>
-        <div class="gallery-item" onclick="openLightbox(this)">
-          <img src="IMG_1800.jpeg" alt="Memory 3">
-          <div class="gallery-caption">Memory 3</div>
+
+        <div class="gallery-item">
+          <img src="https://i.postimg.cc/xCMqDP34/IMG-5189.jpg" alt="Memory 3">
         </div>
-        <div class="gallery-item" onclick="openLightbox(this)">
-          <img src="IMG_8130.jpeg" alt="Memory 4">
-          <div class="gallery-caption">Memory 4</div>
+
+        <div class="gallery-item">
+          <img src="https://i.postimg.cc/mr0h5nCM/IMG-5188.jpg" alt="Memory 4">
         </div>
-        <div class="gallery-item" onclick="openLightbox(this)">
-          <img src="Snapchat-10320377.jpg" alt="Memory 5">
-          <div class="gallery-caption">Memory 5</div>
-        </div>
-        <div class="gallery-item" onclick="openLightbox(this)">
-          <img src="IMG_1793.jpeg" alt="Memory 6">
-          <div class="gallery-caption">Memory 6</div>
-        </div>
+
       </div>
     </div>
 
     <!-- NOTES TAB -->
     <div class="tab-pane" id="tab-notes">
       <div class="notes-header">Messages with Love 💌</div>
+
       <div class="note-card">
-        <div class="note-text">"Wishing you a very Happy Birthday, Big Sis! You deserve all the love and joy today. 🥳✨"</div>
-        <div class="note-from">— Yours Truly</div>
+        <div class="note-text">Happy Birthday ❤️</div>
+        <div class="note-from">— Friend</div>
       </div>
+
       <div class="note-card">
-        <div class="note-text">"I pray you have days filled with love and favour. May every door open for you this year."</div>
-        <div class="note-from">— Divzy</div>
+        <div class="note-text">You are loved 🌸</div>
+        <div class="note-from">— Someone special</div>
       </div>
-      <div class="note-card">
-        <div class="note-text">"Happy Birthday, darling. You are so loved. 🌸"</div>
-        <div class="note-from">— Add more mess
+
+    </div>
+
+  </div>
+
+  <!-- ══════════════ BOTTOM NAV (FIXED POSITION) ══════════════ -->
+  <div class="bottom-nav">
+
+    <div class="nav-btn active" onclick="switchTab('tab-letter', this)">💌</div>
+
+    <div class="nav-btn" onclick="switchTab('tab-music', this)">🎵</div>
+
+    <div class="nav-btn" onclick="switchTab('tab-gallery', this)">📸</div>
+
+    <div class="nav-btn" onclick="switchTab('tab-notes', this)">💬</div>
+
+  </div>
+
+</div>
+
+<script>
+/* ================= LOCK SCREEN ================= */
+let input = "";
+const correctPin = "210708";
+
+function updateDots() {
+  for (let i = 0; i < 6; i++) {
+    const dot = document.getElementById("d" + i);
+    if (i < input.length) {
+      dot.classList.add("filled");
+    } else {
+      dot.classList.remove("filled");
+    }
+  }
+}
+
+function keyPress(num) {
+  if (input.length < 6) {
+    input += num;
+    updateDots();
+  }
+}
+
+function keyDel() {
+  input = input.slice(0, -1);
+  updateDots();
+}
+
+function keyEnter() {
+  const error = document.getElementById("lock-error");
+
+  if (input === correctPin) {
+    document.getElementById("lock-screen").classList.add("fade-out");
+
+    setTimeout(() => {
+      document.getElementById("lock-screen").style.display = "none";
+      document.getElementById("app").style.display = "flex";
+    }, 600);
+
+  } else {
+    error.classList.add("show");
+
+    document.querySelectorAll(".dot").forEach(dot => {
+      dot.classList.add("shake");
+      setTimeout(() => dot.classList.remove("shake"), 400);
+    });
+
+    input = "";
+    updateDots();
+
+    setTimeout(() => {
+      error.classList.remove("show");
+    }, 1500);
+  }
+}
+
+/* ================= TAB NAVIGATION ================= */
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-pane').forEach(tab => {
+    tab.classList.remove('active');
+  });
+
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.remove('active');
+  });
+
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ================= MUSIC PLAYER ================= */
+const audio = document.getElementById("audio");
+const playBtn = document.getElementById("play-btn");
+const progress = document.getElementById("progress");
+const curTime = document.getElementById("cur-time");
+const durTime = document.getElementById("dur-time");
+const albumArt = document.getElementById("album-art");
+
+function togglePlay() {
+  if (audio.paused) {
+    audio.play();
+    playBtn.textContent = "⏸️";
+    albumArt.classList.add("spinning");
+  } else {
+    audio.pause();
+    playBtn.textContent = "▶️";
+    albumArt.classList.remove("spinning");
+  }
+}
+
+function seekBack() {
+  audio.currentTime = Math.max(0, audio.currentTime - 5);
+}
+
+function seekFwd() {
+  audio.currentTime = Math.min(audio.duration, audio.currentTime + 5);
+}
+
+/* Update progress */
+audio.addEventListener("timeupdate", () => {
+  if (audio.duration) {
+    progress.value = (audio.currentTime / audio.duration) * 100;
+
+    curTime.textContent = formatTime(audio.currentTime);
+    durTime.textContent = formatTime(audio.duration);
+  }
+});
+
+/* Seek from slider */
+progress.addEventListener("input", () => {
+  audio.currentTime = (progress.value / 100) * audio.duration;
+});
+
+/* Format time */
+function formatTime(time) {
+  const mins = Math.floor(time / 60);
+  const secs = Math.floor(time % 60).toString().padStart(2, '0');
+  return `${mins}:${secs}`;
+}
+
+/* ================= LIGHTBOX ================= */
+function openLightbox(el) {
+  const img = el.querySelector("img");
+  if (!img) return;
+
+  let lightbox = document.getElementById("lightbox");
+
+  if (!lightbox) {
+    lightbox = document.createElement("div");
+    lightbox.id = "lightbox";
+    lightbox.innerHTML = `
+      <button id="lightbox-close">✕</button>
+      <img src="" />
+    `;
+    document.body.appendChild(lightbox);
+
+    lightbox.addEventListener("click", (e) => {
+      if (e.target.id === "lightbox" || e.target.id === "lightbox-close") {
+        lightbox.classList.remove("open");
+      }
+    });
+  }
+
+  lightbox.querySelector("img").src = img.src;
+  lightbox.classList.add("open");
+}
+</script>
+</body>
+</html>    
