@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy Birthday Baby ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --rose:    #e8607a;
+  --blush:   #f9d4dc;
+  --cream:   #fff8f5;
+  --deep:    #2b1018;
+  --text:    #3d1f28;
+  --muted:   #9c7480;
+  --gold:    #d4a04a;
+  --white:   #ffffff;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── FLOATING PETALS ─── */
+#petal-bg {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+}
+.petal {
+  position: absolute;
+  width: 8px; height: 12px;
+  border-radius: 50% 0 50% 0;
+  opacity: 0;
+  animation: petalFall linear infinite;
+}
+@keyframes petalFall {
+  0%   { transform: translateY(-20px) rotate(0deg) translateX(0); opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.3; }
+  100% { transform: translateY(105vh) rotate(540deg) translateX(40px); opacity: 0; }
+}
+
+/* ─── LOCK SCREEN ─── */
+#lock-screen {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: linear-gradient(160deg, #fff0f3 0%, #fce4ea 50%, #f9d4dc 100%);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+#lock-screen.fade-out {
+  opacity: 0; transform: scale(1.04); pointer-events: none;
+}
+
+.lock-card {
+  width: min(340px, 90vw);
+  background: white;
+  border-radius: 28px;
+  padding: 36px 28px 28px;
+  box-shadow: 0 20px 60px rgba(200,80,100,0.15), 0 4px 12px rgba(0,0,0,0.06);
+  text-align: center;
+}
+.lock-icon {
+  font-size: 3rem; margin-bottom: 12px;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+@keyframes floatIcon {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.lock-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.7rem; font-weight: 600;
+  color: var(--deep); margin-bottom: 6px;
+}
+.lock-hint {
+  font-size: 0.78rem; color: var(--muted);
+  margin-bottom: 24px; letter-spacing: 0.02em;
+}
+
+/* PIN DOTS */
+.pin-dots {
+  display: flex; justify-content: center; gap: 12px; margin-bottom: 28px;
+}
+.dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--rose);
+  background: transparent;
+  transition: background 0.2s, transform 0.2s;
+}
+.dot.filled {
+  background: var(--rose);
+  transform: scale(1.15);
+}
+.dot.shake { animation: dotShake 0.4s ease; }
+@keyframes dotShake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+/* KEYPAD */
+.keypad {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+}
+.key {
+  height: 56px; border-radius: 14px; border: none;
+  background: #fff5f7; color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1.3rem; font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.key:active { background: var(--blush); transform: scale(0.93); }
+.key.del { background: #fff0f3; color: var(--rose); font-size: 1.1rem; }
+.key.blank { visibility: hidden; }
+.key.enter {
+  grid-column: span 3;
+  background: linear-gradient(135deg, #e8607a, #c0404e);
+  color: white; font-size: 0.85rem;
+  letter-spacing: 0.1em; font-weight: 600;
+  height: 50px;
+  box-shadow: 0 6px 20px rgba(200,60,80,0.35);
+}
+.key.enter:active { transform: scale(0.96); }
+
+.lock-error {
+  margin-top: 14px; font-size: 0.78rem;
+  color: var(--rose); min-height: 18px;
+  opacity: 0; transition: opacity 0.3s;
+}
+.lock-error.show { opacity: 1; }
+
+/* ─── MAIN APP ─── */
+#app {
+  position: fixed; inset: 0; z-index: 10;
+  display: none; flex-direction: column;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+/* HEADER */
+.app-header {
+  padding: 18px 20px 12px;
+  background: white;
+  border-bottom: 1px solid rgba(232,96,122,0.1);
+  text-align: center;
+  flex-shrink: 0;
+}
+.app-header-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem; font-weight: 600;
+  color: var(--deep);
+}
+.app-header-sub {
+  font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
+}
+
+/* SCROLL AREA */
+.scroll-area {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 16px 100px;
+}
+.scroll-area::-webkit-scrollbar { display: none; }
+
+/* TAB CONTENT */
+.tab-pane { display: none; animation: slideUp 0.4s ease; }
+.tab-pane.active { display: block; }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 72px;
+  background: white;
+  border-top: 1px solid rgba(232,96,122,0.1);
+  display: flex; align-items: center; justify-content: space-around;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  flex-shrink: 0;
+}
+.nav-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  cursor: pointer; padding: 8px 14px; border-radius: 14px;
+  transition: background 0.2s; -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.nav-btn.active { background: #fff0f3; }
+.nav-btn .icon { font-size: 1.4rem; opacity: 0.4; transition: opacity 0.2s, transform 0.2s; }
+.nav-btn.active .icon { opacity: 1; transform: scale(1.15); }
+.nav-btn .label { font-size: 0.62rem; color: var(--muted); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; }
+.nav-btn.active .label { color: var(--rose); }
+
+/* ─── LETTER TAB ─── */
+.letter-envelope {
+  background: white;
+  border-radius: 24px;
+  padding: 28px 24px;
+  box-shadow: 0 8px 30px rgba(200,80,100,0.1);
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.letter-envelope::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--rose), var(--gold), var(--rose));
+}
+.letter-tag {
+  font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--rose); margin-bottom: 14px; font-weight: 500;
+}
+.letter-greeting {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem; font-weight: 600; color: var(--deep);
+  margin-bottom: 16px; line-height: 1.2;
+}
+.letter-body {
+  font-size: 0.92rem; line-height: 1.85; color: var(--text);
+}
+.letter-body p { margin-bottom: 14px; }
+.letter-body .highlight { color: var(--rose); font-style: italic; }
+.letter-sign {
+  margin-top: 20px; font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem; font-style: italic; color: var(--gold); text-align: right;
+}
+
+/* ─── MUSIC TAB ─── */
+.player-card {
+  background: linear-gradient(145deg, #2b1018, #4a1a28);
+  border-radius: 28px;
+  padding: 32px 24px 28px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 20px 50px rgba(43,16,24,0.35);
+  margin-bottom: 16px;
+}
+.album-art {
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease;
+}
+.album-art.spinning { animation: spin 8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.album-art img {
+  width: 100%; height: 100%; object-fit: cover;
+  position: absolute; inset: 0; border-radius: 50%;
+}
+.album-art .fallback { font-size: 3.5rem; }
+.song-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; margin-bottom: 4px; }
+.song-artist { font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+.song-tag { font-size: 0.7rem; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 24px; }
+
+.progress-wrap { margin-bottom: 18px; }
+.progress-bar {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,0.15); outline: none; cursor: pointer;
+}
+.progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--rose); cursor: pointer;
+  box-shadow: 0 0 6px rgba(232,96,122,0.8);
+}
+.time-row {
+  display: flex; justify-content: space-between;
+  font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-top: 6px;
+}
+
+.controls {
+  display: flex; align-items: center; justify-content: center; gap: 24px;
+}
+.ctrl-btn {
+  background: none; border: none; color: rgba(255,255,255,0.6);
+  font-size: 1.4rem; cursor: pointer; padding: 8px;
+  transition: color 0.2s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.ctrl-btn:active { transform: scale(0.85); }
+.ctrl-play {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: var(--rose); color: white; border: none;
+  font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 20px rgba(232,96,122,0.5);
+  transition: transform 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.ctrl-play:active { transform: scale(0.92); box-shadow: 0 3px 12px rgba(232,96,122,0.4); }
+
+.audio-note {
+  background: rgba(255,255,255,0.06); border-radius: 12px;
+  padding: 12px 16px; margin-top: 16px;
+  font-size: 0.72rem; color: rgba(255,255,255,0.4); text-align: left; line-height: 1.6;
+}
+
+/* ─── GALLERY TAB ─── */
+.gallery-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.gallery-item {
+  border-radius: 16px; overflow: hidden;
+  aspect-ratio: 1; background: #f0e0e5;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.gallery-item:first-child { grid-column: span 2; aspect-ratio: 16/9; }
+.gallery-item:active { transform: scale(0.97); }
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery-item .placeholder {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; color: var(--muted); font-size: 0.7rem; text-align: center; padding: 8px;
+}
+.gallery-item .placeholder span { font-size: 2rem; }
+.gallery-caption {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(43,16,24,0.7));
+  color: white; font-size: 0.68rem; padding: 20px 10px 8px;
+  opacity: 0; transition: opacity 0.2s;
+}
+.gallery-item:hover .gallery-caption,
+.gallery-item:active .gallery-caption { opacity: 1; }
+
+/* LIGHTBOX */
+#lightbox {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.92);
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+}
+#lightbox.open { display: flex; }
+#lightbox img { max-width: 100%; max-height: 85vh; border-radius: 12px; object-fit: contain; }
+#lightbox-close {
+  position: absolute; top: 20px; right: 20px;
+  background: rgba(255,255,255,0.15); border: none; color: white;
+  width: 40px; height: 40px; border-radius: 50%; font-size: 1.1rem; cursor: pointer;
+}
+
+/* ─── NOTES TAB ─── */
+.notes-header {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem; color: var(--deep); margin-bottom: 16px; font-weight: 600;
+}
+.note-card {
+  background: white; border-radius: 20px;
+  padding: 20px; margin-bottom: 12px;
+  box-shadow: 0 4px 16px rgba(200,80,100,0.08);
+  border-left: 3px solid var(--rose);
+  opacity: 0;
+  animation: noteIn 0.5s ease forwards;
+}
+.note-card:nth-child(2) { animation-delay: 0.1s; border-color: var(--gold); }
+.note-card:nth-child(3) { animation-delay: 0.2s; border-color: #a084ca; }
+.note-card:nth-child(4) { animation-delay: 0.3s; }
+@keyframes noteIn {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.note-text { font-style: italic; font-size: 0.9rem; line-height: 1.7; color: var(--text); margin-bottom: 10px; }
+.note-from { font-size: 0.72rem; color: var(--muted); font-weight: 500; text-align: right; }
+
+/* confetti pieces (reused from unlock) */
+.confetti-piece {
+  position: fixed; pointer-events: none; z-index: 999;
+  width: 8px; height: 8px; border-radius: 2px;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0%   { opacity: 1; transform: translateY(0) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+}
+</style>
+</head>
+<body>
+
+<!-- PETALS -->
+<div id="petal-bg"></div>
+
+<!-- ══════════════ LOCK SCREEN ══════════════ -->
+<div id="lock-screen">
+  <div class="lock-card">
+    <div class="lock-icon">🌹</div>
+    <div class="lock-title">A Gift For You</div>
+    <div class="lock-hint">Hint: Your date 💕</div>
+
+    <div class="pin-dots">
+      <div class="dot" id="d0"></div>
+      <div class="dot" id="d1"></div>
+      <div class="dot" id="d2"></div>
+      <div class="dot" id="d3"></div>
+      <div class="dot" id="d4"></div>
+      <div class="dot" id="d5"></div>
+    </div>
+
+    <div class="keypad">
+      <button class="key" onclick="keyPress('1')">1</button>
+      <button class="key" onclick="keyPress('2')">2</button>
+      <button class="key" onclick="keyPress('3')">3</button>
+      <button class="key" onclick="keyPress('4')">4</button>
+      <button class="key" onclick="keyPress('5')">5</button>
+      <button class="key" onclick="keyPress('6')">6</button>
+      <button class="key" onclick="keyPress('7')">7</button>
+      <button class="key" onclick="keyPress('8')">8</button>
+      <button class="key" onclick="keyPress('9')">9</button>
+      <button class="key blank"></button>
+      <button class="key" onclick="keyPress('0')">0</button>
+      <button class="key del" onclick="keyDel()">⌫</button>
+      <button class="key enter" onclick="keyEnter()">OPEN ✨</button>
+    </div>
+
+    <div class="lock-error" id="lock-error">Wrong code — try again 💕</div>
+  </div>
+</div>
+
+<!-- ══════════════ MAIN APP ══════════════ -->
+<div id="app">
+
+  <div class="app-header">
+    <div class="app-header-title">Happy Birthday Baby ❤️</div>
+    <div class="app-header-sub">Your Special Day · 21 · 07 · 2008</div>
+  </div>
+
+  <div class="scroll-area" id="scroll-area">
+
+    <!-- LETTER TAB -->
+    <div class="tab-pane active" id="tab-letter">
+      <div class="letter-envelope">
+        <div class="letter-tag">✦ A personal letter just for you</div>
+        <div class="letter-greeting">My Dearest SP 🌹❤️</div>
+        <div class="letter-body">
+          <p>Happy Birthday, love. 🎂</p>
+          <p>Today the world got a little brighter — because it's the day <span class="highlight">you</span> arrived in it. You are absolutely beautiful, inside and out, and I love you more than words could ever carry.</p>
+          <p>Looking back at everything we've shared, every laugh, every moment, every small thing that makes us <em>us</em> — I'm so grateful. May your 18th year be your most beautiful yet, filled with joy, favour, and every blessing you deserve.</p>
+          <p><span class="highlight">Long life. Prosperity. Love without limit.</span></p>
+          <p>This is your very first digital birthday gift card — and it was made entirely with you in mind. I hope it made you smile. 🥂</p>
+        </div>
+        <div class="letter-sign">Forever yours ❤️</div>
+      </div>
+    </div>
+
+    <!-- MUSIC TAB -->
+    <div class="tab-pane" id="tab-music">
+      <div class="player-card">
+        <div class="album-art" id="album-art">
+          <!--
+            ════════════════════════════════════════════
+            HOW TO ADD YOUR ALBUM ART IMAGE:
+            1. Go to https://base64.guru/converter/encode/image
+            2. Upload IMG_1793.jpeg
+            3. Copy the Base64 string
+            4. Replace the src below:
+               <img src="data:image/jpeg;base64,PASTE_HERE" alt="Album Art">
+            5. Delete the .fallback div below it
+            ════════════════════════════════════════════
+          -->
+          <div class="fallback">🎵</div>
+        </div>
+        <div class="song-title">Need Me</div>
+        <div class="song-artist">Fireboy DML</div>
+        <div class="song-tag">💕 Our Love Song</div>
+
+        <div class="progress-wrap">
+          <input type="range" class="progress-bar" id="progress" value="0" min="0" max="100" step="0.1">
+          <div class="time-row">
+            <span id="cur-time">0:00</span>
+            <span id="dur-time">0:00</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button class="ctrl-btn" onclick="seekBack()">⏪</button>
+          <button class="ctrl-play" id="play-btn" onclick="togglePlay()">▶️</button>
+          <button class="ctrl-btn" onclick="seekFwd()">⏩</button>
+        </div>
+
+        <!--
+          ════════════════════════════════════════════
+          HOW TO ADD YOUR AUDIO FILE:
+          1. Go to https://base64.guru/converter/encode/audio
+          2. Upload your mp3 file
+          3. Copy the Base64 string
+          4. Replace the src below with:
+             data:audio/mp3;base64,PASTE_YOUR_STRING_HERE
+          ════════════════════════════════════════════
+        -->
+        <audio id="audio" src="song.mp3"></audio>
+      </div>
+    </div>
+
+    <!-- GALLERY TAB -->
+    <div class="tab-pane" id="tab-gallery">
+      <div class="gallery-grid" id="gallery-grid">
+        <!--
+          ════════════════════════════════════════════
+          HOW TO ADD YOUR PHOTOS:
+          For each photo:
+          1. Go to https://base64.guru/converter/encode/image
+          2. Upload your photo
+          3. Copy the Base64 string
+          4. In each .gallery-item below, replace the placeholder div with:
+             <img src="data:image/jpeg;base64,PASTE_HERE" alt="Memory">
+          ════════════════════════════════════════════
+        -->
+        <div class="gallery-item" onclick="openLightbox(this)">
+          <img src="20251018_120302.jpg" alt="Memory 1">
+          <div class="gallery-caption">Memory 1</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox(this)">
+          <img src="IMG_1793.jpeg" alt="Memory 2">
+          <div class="gallery-caption">Memory 2</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox(this)">
+          <img src="IMG_1800.jpeg" alt="Memory 3">
+          <div class="gallery-caption">Memory 3</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox(this)">
+          <img src="IMG_8130.jpeg" alt="Memory 4">
+          <div class="gallery-caption">Memory 4</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox(this)">
+          <img src="Snapchat-10320377.jpg" alt="Memory 5">
+          <div class="gallery-caption">Memory 5</div>
+        </div>
+        <div class="gallery-item" onclick="openLightbox(this)">
+          <img src="IMG_1793.jpeg" alt="Memory 6">
+          <div class="gallery-caption">Memory 6</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTES TAB -->
+    <div class="tab-pane" id="tab-notes">
+      <div class="notes-header">Messages with Love 💌</div>
+      <div class="note-card">
+        <div class="note-text">"Wishing you a very Happy Birthday, Big Sis! You deserve all the love and joy today. 🥳✨"</div>
+        <div class="note-from">— Yours Truly</div>
+      </div>
+      <div class="note-card">
+        <div class="note-text">"I pray you have days filled with love and favour. May every door open for you this year."</div>
+        <div class="note-from">— Divzy</div>
+      </div>
+      <div class="note-card">
+        <div class="note-text">"Happy Birthday, darling. You are so loved. 🌸"</div>
+        <div class="note-from">— Add more mess
