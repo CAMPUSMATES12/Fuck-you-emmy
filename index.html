@@ -517,50 +517,102 @@ html, body {
       </div>
     </div>
 
-    <!-- MUSIC TAB -->
+<!-- MUSIC TAB -->
 <div class="tab-pane" id="tab-music">
 
-  <div class="player-card">
+  <!-- ===== SONG 1 ===== -->
+  <div class="player-card" onclick="setActivePlayer(this)">
 
-    <!-- Album Art -->
-    <div class="album-art" id="album-art">
-      <div class="fallback">🎵</div>
+    <div class="album-art">
+      <img src="https://i.postimg.cc/NMh2MxBR/3e373085-be53-4719-942e-c53780083665.jpg" alt="Song 1 Art">
     </div>
 
-    <!-- Song Info -->
-    <div class="song-title">Need Me</div>
+    <div class="song-title">Need You</div>
     <div class="song-artist">Fireboy DML</div>
 
-    <!-- Audio -->
-    <audio id="audio"
+    <audio class="audio"
       src="https://mp3tourl.com/audio/1776421912073-f0986b65-7497-4472-bc37-fdf7cbc0dc33.mp3">
     </audio>
 
-    <!-- Progress Bar -->
     <div class="progress-wrap">
-      <input type="range" class="progress-bar" id="progress"
-        value="0" min="0" max="100" step="0.1">
+      <input type="range" class="progress-bar" value="0" min="0" max="100" step="0.1">
 
       <div class="time-row">
-        <span id="cur-time">0:00</span>
-        <span id="dur-time">0:00</span>
+        <span class="cur-time">0:00</span>
+        <span class="dur-time">0:00</span>
       </div>
     </div>
 
-    <!-- Controls -->
     <div class="controls">
-
       <button class="ctrl-btn" onclick="seekBack()">⏪</button>
-
-      <button class="ctrl-play" id="play-btn" onclick="togglePlay()">
-        ▶️
-      </button>
-
+      <button class="ctrl-play" onclick="togglePlay(this)">▶️</button>
       <button class="ctrl-btn" onclick="seekFwd()">⏩</button>
-
     </div>
 
   </div>
+
+  <!-- ===== SONG 2 ===== -->
+  <div class="player-card" onclick="setActivePlayer(this)" style="margin-top:20px;">
+
+    <div class="album-art">
+      <img src="https://i.postimg.cc/15mCXmYK/41c4b6bd-06b4-47c9-a521-5cd49a072c7e.jpg" alt="Song 2 Art">
+    </div>
+
+    <div class="song-title">Solace II</div>
+    <div class="song-artist">Kumie x Joeboy</div>
+
+    <audio class="audio"
+      src="https://mp3tourl.com/audio/1776429557278-e7ac0865-5e89-44ee-a56f-1e89beb3f78b.mp3">
+    </audio>
+
+    <div class="progress-wrap">
+      <input type="range" class="progress-bar" value="0" min="0" max="100" step="0.1">
+
+      <div class="time-row">
+        <span class="cur-time">0:00</span>
+        <span class="dur-time">0:00</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="ctrl-btn" onclick="seekBack()">⏪</button>
+      <button class="ctrl-play" onclick="togglePlay(this)">▶️</button>
+      <button class="ctrl-btn" onclick="seekFwd()">⏩</button>
+    </div>
+
+  </div>
+
+  <!-- ===== SONG 3 ===== -->
+  <div class="player-card" onclick="setActivePlayer(this)" style="margin-top:20px;">
+
+    <div class="album-art">
+      <img src="https://i.postimg.cc/PxZXCzJR/0a0bb4d2-6d16-4cca-8e18-9cb5c2194ed2.jpg" alt="Song 3 Art">
+    </div>
+
+    <div class="song-title">Need Me</div>
+    <div class="song-artist">Fireboy DML</div>
+
+    <audio class="audio"
+      src="https://mp3tourl.com/audio/1776430189063-da0bb51e-3665-4e2e-8237-3fe676f83f17.mp3">
+    </audio>
+
+    <div class="progress-wrap">
+      <input type="range" class="progress-bar" value="0" min="0" max="100" step="0.1">
+
+      <div class="time-row">
+        <span class="cur-time">0:00</span>
+        <span class="dur-time">0:00</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="ctrl-btn" onclick="seekBack()">⏪</button>
+      <button class="ctrl-play" onclick="togglePlay(this)">▶️</button>
+      <button class="ctrl-btn" onclick="seekFwd()">⏩</button>
+    </div>
+
+  </div>
+
 </div>
 
     <!-- GALLERY TAB -->
@@ -722,54 +774,111 @@ function switchTab(tabId, btn) {
 }
 
 /* ================= MUSIC PLAYER ================= */
-const audio = document.getElementById("audio");
-const playBtn = document.getElementById("play-btn");
-const progress = document.getElementById("progress");
-const curTime = document.getElementById("cur-time");
-const durTime = document.getElementById("dur-time");
-const albumArt = document.getElementById("album-art");
+let activePlayer = null;
 
-function togglePlay() {
+/* ================= SET ACTIVE PLAYER ================= */
+function setActivePlayer(card) {
+  activePlayer = card;
+
+  // Stop all other audios
+  document.querySelectorAll(".player-card").forEach(c => {
+    const audio = c.querySelector(".audio");
+    const btn = c.querySelector(".ctrl-play");
+
+    if (audio && !c.isSameNode(card)) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+
+    if (btn && !c.isSameNode(card)) {
+      btn.textContent = "▶️";
+    }
+  });
+}
+
+/* ================= GET ACTIVE ELEMENTS ================= */
+function getAudio(card) {
+  return card.querySelector(".audio");
+}
+
+/* ================= PLAY / PAUSE ================= */
+function togglePlay(btn) {
+  const card = btn.closest(".player-card");
+  const audio = getAudio(card);
+
+  setActivePlayer(card);
+
+  // prevent undefined crash
+  if (!audio) return;
+
+  // PLAY
   if (audio.paused) {
     audio.play();
-    playBtn.textContent = "⏸️";
-    albumArt.classList.add("spinning");
-  } else {
+    btn.textContent = "⏸️";
+  } 
+  // PAUSE
+  else {
     audio.pause();
-    playBtn.textContent = "▶️";
-    albumArt.classList.remove("spinning");
+    btn.textContent = "▶️";
   }
 }
 
-function seekBack() {
+/* ================= SEEK ================= */
+function seekBack(btn) {
+  const card = btn.closest(".player-card");
+  const audio = getAudio(card);
+
+  if (!audio) return;
   audio.currentTime = Math.max(0, audio.currentTime - 5);
 }
 
-function seekFwd() {
-  audio.currentTime = Math.min(audio.duration, audio.currentTime + 5);
+function seekFwd(btn) {
+  const card = btn.closest(".player-card");
+  const audio = getAudio(card);
+
+  if (!audio) return;
+  audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5);
 }
 
-/* Update progress */
-audio.addEventListener("timeupdate", () => {
-  if (audio.duration) {
-    progress.value = (audio.currentTime / audio.duration) * 100;
-
-    curTime.textContent = formatTime(audio.currentTime);
-    durTime.textContent = formatTime(audio.duration);
-  }
-});
-
-/* Seek from slider */
-progress.addEventListener("input", () => {
-  audio.currentTime = (progress.value / 100) * audio.duration;
-});
-
-/* Format time */
+/* ================= FORMAT TIME ================= */
 function formatTime(time) {
   const mins = Math.floor(time / 60);
-  const secs = Math.floor(time % 60).toString().padStart(2, '0');
+  const secs = Math.floor(time % 60).toString().padStart(2, "0");
   return `${mins}:${secs}`;
 }
+
+/* ================= INIT ALL PLAYERS ================= */
+document.querySelectorAll(".player-card").forEach(card => {
+  const audio = card.querySelector(".audio");
+  const progress = card.querySelector(".progress-bar");
+  const cur = card.querySelector(".cur-time");
+  const dur = card.querySelector(".dur-time");
+  const btn = card.querySelector(".ctrl-play");
+
+  /* progress update */
+  audio.addEventListener("timeupdate", () => {
+    if (!audio.duration) return;
+
+    progress.value = (audio.currentTime / audio.duration) * 100;
+    cur.textContent = formatTime(audio.currentTime);
+    dur.textContent = formatTime(audio.duration);
+  });
+
+  /* seek */
+  progress.addEventListener("input", (e) => {
+    audio.currentTime = (e.target.value / 100) * audio.duration;
+  });
+
+  /* duration load */
+  audio.addEventListener("loadedmetadata", () => {
+    dur.textContent = formatTime(audio.duration);
+  });
+
+  /* reset button when song ends */
+  audio.addEventListener("ended", () => {
+    btn.textContent = "▶️";
+  });
+});
 
 /* ================= LIGHTBOX ================= */
 function openLightbox(el) {
